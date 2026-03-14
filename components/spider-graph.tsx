@@ -186,7 +186,7 @@ export default function SpiderGraph({
                   fill={s.color}
                   stroke="#fff"
                   strokeWidth={1.5}
-                  className="cursor-pointer transition-all hover:r-7"
+                  className="cursor-pointer"
                   onMouseEnter={(e) => {
                     const rect = (
                       e.currentTarget.closest("svg") as SVGElement

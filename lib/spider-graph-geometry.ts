@@ -45,7 +45,7 @@ export function getScalePolygons(
 ): { x: number; y: number }[][] {
   const sides = dimensions.length;
   const levels: { x: number; y: number }[][] = [];
-  const steps = Math.round((scale.max - scale.min) / scale.step);
+  const steps = Math.round((scale.max - scale.min) / Math.max(scale.step, 0.001));
 
   for (let step = 1; step <= steps; step++) {
     const radius = (step / steps) * maxRadius;
