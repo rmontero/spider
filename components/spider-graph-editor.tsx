@@ -10,6 +10,7 @@ interface SpiderGraphEditorProps {
   onExportJson?: () => void;
   onImportJson?: (json: string) => void;
   onExportSvg?: () => void;
+  onExportPng?: () => void;
 }
 
 // Reusable toggle switch component
@@ -77,6 +78,7 @@ export default function SpiderGraphEditor({
   onExportJson,
   onImportJson,
   onExportSvg,
+  onExportPng,
 }: SpiderGraphEditorProps) {
   const uid = useId();
   const { config, series } = state;
@@ -185,6 +187,14 @@ export default function SpiderGraphEditor({
     <div className="space-y-4 text-slate-800">
       {/* Export / Import buttons */}
       <div className="flex flex-wrap gap-2">
+        {onExportPng && (
+          <button
+            onClick={onExportPng}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
+          >
+            ↓ PNG
+          </button>
+        )}
         {onExportSvg && (
           <button
             onClick={onExportSvg}
@@ -203,11 +213,24 @@ export default function SpiderGraphEditor({
         )}
         {onImportJson && (
           <label className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer">
-            ↑ Import JSON
+            ↑ JSON
             <input type="file" accept=".json" className="hidden" onChange={handleImport} />
           </label>
         )}
       </div>
+
+      <Section title="Chart">
+        <div>
+          <label className="text-xs text-slate-500 mb-1 block">Title</label>
+          <input
+            type="text"
+            value={config.title}
+            onChange={(e) => updateConfig({ title: e.target.value })}
+            className="w-full px-2.5 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+            placeholder="Chart title"
+          />
+        </div>
+      </Section>
 
       {/* Dimensions */}
       <Section title="Dimensions">

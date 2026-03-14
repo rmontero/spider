@@ -22,6 +22,7 @@ export type Series = {
 };
 
 export type SpiderGraphConfig = {
+  title: string;
   dimensions: Dimension[];
   scale: ScaleConfig;
   showDimensionLabels: boolean;

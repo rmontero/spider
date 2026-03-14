@@ -7,6 +7,7 @@ import { SpiderGraphState } from "@/types/spider-graph";
 
 const DEFAULT_STATE: SpiderGraphState = {
   config: {
+    title: "Skill Assessment Chart",
     dimensions: [
       { id: "dim-1", label: "Performance" },
       { id: "dim-2", label: "Potential" },
@@ -83,7 +84,13 @@ export default function Home() {
         parsed.config.dimensions.length >= 3 &&
         Array.isArray(parsed.series)
       ) {
-        setState(parsed);
+        setState({
+          ...parsed,
+          config: {
+            ...parsed.config,
+            title: parsed.config.title || DEFAULT_STATE.config.title,
+          },
+        });
       } else {
         alert("Invalid config: must have at least 3 dimensions and a series array.");
       }
@@ -103,6 +110,46 @@ export default function Home() {
     a.download = "spider-graph.svg";
     a.click();
     URL.revokeObjectURL(url);
+  }, []);
+
+  const handleExportPng = useCallback(async () => {
+    const svgEl = svgRef.current?.querySelector("svg");
+    if (!svgEl) return;
+
+    const svgData = new XMLSerializer().serializeToString(svgEl);
+    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const svgUrl = URL.createObjectURL(svgBlob);
+
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Failed to load SVG image."));
+        img.src = svgUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = svgEl.viewBox.baseVal.width || svgEl.clientWidth || 500;
+      canvas.height = svgEl.viewBox.baseVal.height || svgEl.clientHeight || 500;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "spider-graph.png";
+        a.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    } catch {
+      alert("Failed to export PNG.");
+    } finally {
+      URL.revokeObjectURL(svgUrl);
+    }
   }, []);
 
   return (
@@ -146,13 +193,14 @@ export default function Home() {
             onExportJson={handleExportJson}
             onImportJson={handleImportJson}
             onExportSvg={handleExportSvg}
+            onExportPng={handleExportPng}
           />
         </aside>
 
         {/* Right panel: chart */}
         <main className="flex-1 min-w-0">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center">
-            <h2 className="text-lg font-semibold text-slate-900 mb-1">Skill Assessment Chart</h2>
+            <h2 className="text-lg font-semibold text-slate-900 mb-1">{state.config.title}</h2>
             <p className="text-sm text-slate-400 mb-6">
               {state.config.dimensions.length} dimensions ·{" "}
               {state.series.filter((s) => s.show !== false).length} series

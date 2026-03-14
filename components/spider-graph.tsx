@@ -187,10 +187,7 @@ export default function SpiderGraph({
                   stroke="#fff"
                   strokeWidth={1.5}
                   className="cursor-pointer"
-                  onMouseEnter={(e) => {
-                    const rect = (
-                      e.currentTarget.closest("svg") as SVGElement
-                    ).getBoundingClientRect();
+                  onMouseEnter={() => {
                     setTooltip({
                       visible: true,
                       x: pt.x,
