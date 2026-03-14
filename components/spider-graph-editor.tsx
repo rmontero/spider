@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useId } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { SpiderGraphConfig, SpiderGraphState, Series, Dimension } from "@/types/spider-graph";
 import { nanoid } from "nanoid";
 
@@ -52,11 +52,29 @@ function Toggle({
 }
 
 // Reusable section card
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  title: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3">
-      <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">{title}</h3>
-      {children}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between text-sm font-semibold text-slate-500 uppercase tracking-wider"
+        aria-expanded={isOpen}
+      >
+        <span>{title}</span>
+        <span className="text-slate-400">{isOpen ? "−" : "+"}</span>
+      </button>
+      {isOpen && children}
     </div>
   );
 }
@@ -72,6 +90,18 @@ const SERIES_COLORS = [
   "#14b8a6",
 ];
 
+type SectionKey = "chart" | "dimensions" | "scale" | "series" | "display";
+
+function buildSectionState(isOpen: boolean): Record<SectionKey, boolean> {
+  return {
+    chart: isOpen,
+    dimensions: isOpen,
+    scale: isOpen,
+    series: isOpen,
+    display: isOpen,
+  };
+}
+
 export default function SpiderGraphEditor({
   state,
   onChange,
@@ -82,6 +112,34 @@ export default function SpiderGraphEditor({
 }: SpiderGraphEditorProps) {
   const uid = useId();
   const { config, series } = state;
+  const [openSections, setOpenSections] = useState<Record<SectionKey, boolean>>(
+    buildSectionState(true)
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const syncSections = (isDesktop: boolean) => {
+      setOpenSections(buildSectionState(isDesktop));
+    };
+
+    syncSections(media.matches);
+
+    const handleMediaChange = (event: MediaQueryListEvent) => {
+      syncSections(event.matches);
+    };
+
+    if (media.addEventListener) {
+      media.addEventListener("change", handleMediaChange);
+      return () => media.removeEventListener("change", handleMediaChange);
+    }
+
+    media.addListener(handleMediaChange);
+    return () => media.removeListener(handleMediaChange);
+  }, []);
+
+  function toggleSection(key: SectionKey) {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
 
   function updateConfig(updates: Partial<SpiderGraphConfig>) {
     onChange({ ...state, config: { ...config, ...updates } });
@@ -219,7 +277,11 @@ export default function SpiderGraphEditor({
         )}
       </div>
 
-      <Section title="Chart">
+      <Section
+        title="Chart"
+        isOpen={openSections.chart}
+        onToggle={() => toggleSection("chart")}
+      >
         <div className="space-y-3">
           <div>
             <label className="text-xs text-slate-500 mb-1 block">Title</label>
@@ -254,7 +316,11 @@ export default function SpiderGraphEditor({
       </Section>
 
       {/* Dimensions */}
-      <Section title="Dimensions">
+      <Section
+        title="Dimensions"
+        isOpen={openSections.dimensions}
+        onToggle={() => toggleSection("dimensions")}
+      >
         <div className="space-y-2">
           {config.dimensions.map((dim, idx) => (
             <div key={dim.id} className="flex items-center gap-2">
@@ -286,7 +352,11 @@ export default function SpiderGraphEditor({
       </Section>
 
       {/* Scale */}
-      <Section title="Scale">
+      <Section
+        title="Scale"
+        isOpen={openSections.scale}
+        onToggle={() => toggleSection("scale")}
+      >
         <div className="grid grid-cols-3 gap-2">
           <div>
             <label className="text-xs text-slate-500 mb-1 block">Min</label>
@@ -332,7 +402,11 @@ export default function SpiderGraphEditor({
       </Section>
 
       {/* Series */}
-      <Section title="Series">
+      <Section
+        title="Series"
+        isOpen={openSections.series}
+        onToggle={() => toggleSection("series")}
+      >
         <div className="space-y-4">
           {series.map((s) => (
             <div
@@ -414,7 +488,11 @@ export default function SpiderGraphEditor({
       </Section>
 
       {/* Display toggles */}
-      <Section title="Display Options">
+      <Section
+        title="Display Options"
+        isOpen={openSections.display}
+        onToggle={() => toggleSection("display")}
+      >
         <div className="grid grid-cols-1 gap-2.5">
           <Toggle
             id={`${uid}-dim-labels`}
