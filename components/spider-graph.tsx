@@ -47,8 +47,12 @@ export default function SpiderGraph({
     color: "",
   });
 
-  const cx = width / 2;
-  const cy = height / 2;
+  // Expand the outer canvas so long labels have room and don't get clipped.
+  const canvasPadding = 72;
+  const canvasWidth = width + canvasPadding * 2;
+  const canvasHeight = height + canvasPadding * 2;
+  const cx = canvasPadding + width / 2;
+  const cy = canvasPadding + height / 2;
   // Leave room for labels on all sides
   const maxRadius = Math.min(width, height) / 2 - 60;
 
@@ -88,15 +92,15 @@ export default function SpiderGraph({
   return (
     <div className={`relative inline-block ${className}`}>
       <svg
-        width={width}
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
+        width={canvasWidth}
+        height={canvasHeight}
+        viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
         aria-label="Spider Graph"
         role="img"
       >
         {/* Optional grid background */}
         {config.showGridBackground && (
-          <rect x={0} y={0} width={width} height={height} fill="#f8fafc" rx={8} />
+          <rect x={0} y={0} width={canvasWidth} height={canvasHeight} fill="#f8fafc" rx={8} />
         )}
 
         {/* Concentric polygons (scale rings) */}
