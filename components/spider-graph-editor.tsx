@@ -220,15 +220,36 @@ export default function SpiderGraphEditor({
       </div>
 
       <Section title="Chart">
-        <div>
-          <label className="text-xs text-slate-500 mb-1 block">Title</label>
-          <input
-            type="text"
-            value={config.title}
-            onChange={(e) => updateConfig({ title: e.target.value })}
-            className="w-full px-2.5 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
-            placeholder="Chart title"
-          />
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-slate-500 mb-1 block">Title</label>
+            <input
+              type="text"
+              value={config.title}
+              onChange={(e) => updateConfig({ title: e.target.value })}
+              className="w-full px-2.5 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+              placeholder="Chart title"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-slate-500 mb-1 block">Background color</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={config.backgroundColor}
+                onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
+                className="w-9 h-9 rounded border border-slate-200 cursor-pointer p-1 bg-white"
+                title="Background color"
+              />
+              <input
+                type="text"
+                value={config.backgroundColor}
+                onChange={(e) => updateConfig({ backgroundColor: e.target.value })}
+                className="flex-1 px-2.5 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+                placeholder="#f8fafc"
+              />
+            </div>
+          </div>
         </div>
       </Section>
 

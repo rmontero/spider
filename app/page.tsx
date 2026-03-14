@@ -8,6 +8,7 @@ import { SpiderGraphState } from "@/types/spider-graph";
 const DEFAULT_STATE: SpiderGraphState = {
   config: {
     title: "Skill Assessment Chart",
+    backgroundColor: "#f8fafc",
     dimensions: [
       { id: "dim-1", label: "Performance" },
       { id: "dim-2", label: "Potential" },
@@ -89,6 +90,8 @@ export default function Home() {
           config: {
             ...parsed.config,
             title: parsed.config.title || DEFAULT_STATE.config.title,
+            backgroundColor:
+              parsed.config.backgroundColor || DEFAULT_STATE.config.backgroundColor,
           },
         });
       } else {
@@ -156,7 +159,7 @@ export default function Home() {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -179,14 +182,16 @@ export default function Home() {
             </div>
             <span className="text-base font-semibold text-slate-900">Spider Graph Generator</span>
           </div>
-          <span className="text-xs text-slate-400">Next.js · React · TypeScript · Tailwind CSS</span>
+          <span className="hidden sm:block text-xs text-slate-400">
+            Next.js · React · TypeScript · Tailwind CSS
+          </span>
         </div>
       </header>
 
       {/* Main layout */}
-      <div className="max-w-screen-xl mx-auto px-6 py-6 flex gap-6 items-start">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
         {/* Left panel: editor */}
-        <aside className="w-80 flex-shrink-0 space-y-4 sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto pb-8 pr-1">
+        <aside className="w-full lg:w-80 lg:flex-shrink-0 space-y-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pb-8 lg:pr-1">
           <SpiderGraphEditor
             state={state}
             onChange={setState}
@@ -198,14 +203,16 @@ export default function Home() {
         </aside>
 
         {/* Right panel: chart */}
-        <main className="flex-1 min-w-0">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center">
-            <h2 className="text-lg font-semibold text-slate-900 mb-1">{state.config.title}</h2>
-            <p className="text-sm text-slate-400 mb-6">
+        <main className="w-full flex-1 min-w-0">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-8 flex flex-col items-center">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 mb-1 text-center">
+              {state.config.title}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mb-4 sm:mb-6 text-center">
               {state.config.dimensions.length} dimensions ·{" "}
               {state.series.filter((s) => s.show !== false).length} series
             </p>
-            <div ref={svgRef} className="w-full flex justify-center">
+            <div ref={svgRef} className="w-full flex justify-center overflow-x-auto">
               <SpiderGraph
                 config={state.config}
                 series={state.series}

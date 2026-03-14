@@ -95,12 +95,20 @@ export default function SpiderGraph({
         width={canvasWidth}
         height={canvasHeight}
         viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+        className="max-w-full h-auto"
         aria-label="Spider Graph"
         role="img"
       >
         {/* Optional grid background */}
         {config.showGridBackground && (
-          <rect x={0} y={0} width={canvasWidth} height={canvasHeight} fill="#f8fafc" rx={8} />
+          <rect
+            x={0}
+            y={0}
+            width={canvasWidth}
+            height={canvasHeight}
+            fill={config.backgroundColor || "#f8fafc"}
+            rx={8}
+          />
         )}
 
         {/* Concentric polygons (scale rings) */}
